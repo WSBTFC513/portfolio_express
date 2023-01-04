@@ -4,4 +4,4 @@ Expressを利用したportfolioサンプルサイト
 
 ## 概要
 
-Webサイトのサーバーサイド側アプリケーション
+Node.jsのフレームワークであるExpressを用いて作成したWebサイト

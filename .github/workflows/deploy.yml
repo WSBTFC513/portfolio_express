@@ -1,0 +1,59 @@
+name: Express Portfolio
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  FTP-Deploy-Action:
+    name: FTP-Deploy-Action
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          cache: npm
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install Dependencies
+        run: |
+          npm ci
+
+#       - name: ssh key generate
+#           run: echo "$SSH_PRIVATE_KEY" > key && chmod 600 key
+#           env:
+#             SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+#       - name: rsync deployments
+#           uses: burnett01/rsync-deployments@5.1
+#           with:
+#             switches: -avz --delete
+#             path: dist/
+#             remote_path: ${{ secrets.REMOTE_PATH }}
+#             remote_host: ${{ secrets.REMOTE_HOST }}
+#             remote_user: ${{ secrets.REMOTE_USER }}
+#             remote_port: ${{ secrets.REMOTE_PORT }}
+#             remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+#       - name: FTP-Deploy-Action
+#         uses: SamKirkland/FTP-Deploy-Action@4.2.0 # https://github.com/SamKirkland/FTP-Deploy-Action
+#         with:
+#           server: ${{ secrets.PROD_SERVER }} # FTPのサーバーアドレス
+#           username: ${{ secrets.PROD_USERNAME }} # FTPのユーザー名
+#           password: ${{ secrets.PROD_PASSWORD }} # FTPのパスワード
+#           local-dir: ./src/ # アップロードしたいファイルのパス、この場合srcディレクトリ内をアップロード対象としている
+#           server-dir: /public_html/project/prod/ # アップロード先のリモートパス
